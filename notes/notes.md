@@ -42,3 +42,41 @@ Looking at Alice's experimental slides, and thinking about what she is already d
 
 Either way, it's clear that we are going to need some sort of *admin site*.
 
+
+# 2018-05-21
+
+## Maybe a Flask Server?
+
+Looks like a fairly straightforward python web server. 
+
+So a minimal parts list is starting to look like:
+
+* Server machine
+* Flask (and Python)
+* Post _events_ and _adverts_ on an "admin" channel
+* Get the bulletin board page on a "kiosk" channel
+
+It is conceivable that we could have the kiosks talk to a service that is separate from the admin interface. The latter needs to be a web app, so that humans can post stuff. But the former could be a simpler web service. 
+
+* The app updates the content data
+* The service uses the latest data to construct a web page for the kiosks
+
+## Peer Services
+
+The key problem is how the kiosks should stay up to date with the server. 
+It's not super important, but I bet Alice would want to know how things look as soon as she has posted new content. 
+(Of course, she could do that from a browser, in general terms, but if there are geometry issues or scaling issues, she might want to see the real thing.)
+
+It's not that hard to get the kiosks to periodically reload their page. But that does disrupt the flow of any slide shows, so you'd prefer if that only happened when they knew there was updated content. 
+
+In order for the content server to push changes or notifications to the kiosks, there has to be a **peer service** running on the kiosk. 
+
+1. The content server sends a notification to the kiosks
+2. The kiosks send HTTP requests for the bulletin board page
+
+And of course the content server as to know what kiosks exist (that is, their IP addresses). So as each new kiosk comes online, it has to *register* with the content server. 
+
+And if the content server goes down, all the kiosks have to *re-register* once it comes up. Meaning there has to be some sort of heartbeat protocol, so that the kiosks can tell when they might need to re-register (i.e., on state change from "server lost" to "server available"). 
+
+All of which sounds a bit complex.
+
